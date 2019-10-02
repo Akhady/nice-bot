@@ -12,6 +12,8 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 client = discord.Client()
 
+niceCooldown = False
+
 data = []
 with open("nice_data.json", "r+") as data_file:
         data = json.loads(data_file.read())
@@ -54,11 +56,17 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content == 'Nice':
+    if message.content.lower() != 'nice':
+        # any message that is not nice
+        niceCooldown = False
+
+    if message.content == 'Nice' and not niceCooldown:
         add_to_user(message.author.id, message.author.nick)
+        niceCooldown = True
         await message.channel.send("Nice")
-    elif message.content.lower() == 'nice':
+    elif message.content.lower() == 'nice' and not niceCooldown:
         add_to_user(message.author.id, message.author.nick)
+        niceCooldown = True
         await message.channel.send("nice")
     elif message.content.lower() == 'nice top':
         await message.channel.send(get_top_users())
